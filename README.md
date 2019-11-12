@@ -1,6 +1,5 @@
 #  Code Indent Checker
 
-## How to make
 * [오픈소스SW개발 경진대회](openswdev_contest.jpg)
 
 ## Issue
