@@ -4,6 +4,8 @@ mysql.open(connection);
 
 const bodyParser = require('body-parser')
 const request = require('request')
+const fs = require('fs')
+const exec = require('child_process').execSync;
 
 var cid, hid;
 
@@ -133,11 +135,20 @@ const route = (app) => {
         let sendData = JSON.parse(JSON.stringify(req.session.data));
         const query = `SELECT * FROM course WHERE cid = '${cid}';`;
         const search = "SELECT DISTINCT name FROM course;";
-        connection.query(query + search, (err, result) => {
+        const homework = `SELECT * FROM homework WHERE hid = ${hid};`;
+        connection.query(query + search + homework, (err, result) => {
             sendData.cinfo = result[0][0];
             sendData.search = result[1].map( e => e.name );
+            sendData.hinfo = result[2][0];
             res.render('editors', sendData);
         })
+    })
+    app.post('/Convert', (req, res) => {
+        const code = req.body.code;
+        fs.writeFileSync('1.cpp', code, 'utf8');
+        exec('clang-format 1.cpp > 2.cpp');
+        const result = fs.readFileSync('2.cpp', 'utf8');
+        res.send(result);
     })
     app.post('/KillHW', (req, res) => {
         const hid = req.body.hid;
