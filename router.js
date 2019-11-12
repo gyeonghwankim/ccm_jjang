@@ -144,10 +144,12 @@ const route = (app) => {
         })
     })
     app.post('/Convert', (req, res) => {
+        const lang = req.body.language;
         const code = req.body.code;
-        fs.writeFileSync('1.cpp', code, 'utf8');
-        exec('clang-format 1.cpp > 2.cpp');
-        const result = fs.readFileSync('2.cpp', 'utf8');
+	
+        fs.writeFileSync(`1.${lang}`, code, 'utf8');
+        exec(`astyle 1.${lang}`);
+        const result = fs.readFileSync(`1.${lang}`, 'utf8');
         res.send(result);
     })
     app.post('/KillHW', (req, res) => {
