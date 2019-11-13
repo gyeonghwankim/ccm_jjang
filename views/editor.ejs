@@ -55,39 +55,29 @@
 
   function setMode(mode) {
     editor = CodeMirror.fromTextArea(document.getElementById("source"), {
+      indentUnit: 4,
+      styleActiveLine: true,
+      indentWithTabs: true,
       lineNumbers: true,
       matchBrackets: true,
       mode: mode
     });
     editor.setSize(500, 300);
-    editor.on("change", function() {
-      recommend();
-    })
     fixed = CodeMirror.fromTextArea(document.getElementById("fixed"), {
       lineNumbers: true,
       matchBrackets: true,
+      readOnly: true,
       mode: mode
     });
     fixed.setSize(500, 300);
+    editor.on("change", function() {
+      recommend();
+    })
+    editor.on("scroll", function() {
+      const info = editor.getScrollInfo();
+      fixed.scrollTo(info.left, info.top);
+    })
   }
-
-  let editor = CodeMirror.fromTextArea(document.getElementById("source"), {
-    lineNumbers: true,
-    matchBrackets: true,
-    mode: "text/x-csrc"
-  });
-
-  editor.setSize(500, 300);
-
-  // console.log(editor.getMode());
-
-  let fixed = CodeMirror.fromTextArea(document.getElementById("fixed"), {
-    lineNumbers: true,
-    matchBrackets: true,
-    mode: "text/x-csrc"
-  });
-
-  fixed.setSize(500, 300);
 
   function changeLanguage(e) {
     var value = $(e).val();
@@ -157,6 +147,8 @@
       success: function(data) {
         if(data != null) {
           fixed.setValue(data);
+          const info = editor.getScrollInfo();
+          fixed.scrollTo(info.left, info.top);
         }
       }
      });
