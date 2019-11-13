@@ -146,10 +146,11 @@ const route = (app) => {
     app.post('/Convert', (req, res) => {
         const lang = req.body.language;
         const code = req.body.code;
+        const origin = req.body.origin;
     
         fs.writeFileSync(`1.${lang}`, code, 'utf8');
-        fs.writeFileSync(`1.${lang}.orig`, code, 'utf8');
-        exec.execSync(`astyle 1.${lang}`);
+        fs.writeFileSync(`1.${lang}.orig`, origin, 'utf8');
+        exec.execSync(`astyle 1.${lang} -p`);
         const result = fs.readFileSync(`1.${lang}`, 'utf8');
         exec.exec(`diff 1.${lang}.orig 1.${lang}`, function(err, stdout) {
             res.json({'result': result, 'diff': stdout});
