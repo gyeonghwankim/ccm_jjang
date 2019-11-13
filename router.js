@@ -5,7 +5,7 @@ mysql.open(connection);
 const bodyParser = require('body-parser')
 const request = require('request')
 const fs = require('fs')
-const exec = require('child_process').execSync;
+const exec = require('child_process');
 
 var cid, hid;
 
@@ -146,11 +146,14 @@ const route = (app) => {
     app.post('/Convert', (req, res) => {
         const lang = req.body.language;
         const code = req.body.code;
-	
+    
         fs.writeFileSync(`1.${lang}`, code, 'utf8');
-        exec(`astyle 1.${lang}`);
+        fs.writeFileSync(`1.${lang}.orig`, code, 'utf8');
+        exec.execSync(`astyle 1.${lang}`);
         const result = fs.readFileSync(`1.${lang}`, 'utf8');
-        res.send(result);
+        exec.exec(`diff 1.${lang}.orig 1.${lang}`, function(err, stdout) {
+            res.json({'result': result, 'diff': stdout});
+        });
     })
     app.post('/KillHW', (req, res) => {
         const hid = req.body.hid;
@@ -232,19 +235,6 @@ const route = (app) => {
                 res.render('register', { notify: true, message: "가입 실패. 다시 시도해주세요." });
         })
     })
-
-    app.post('/editor', function (req, res) {
-        request.post({
-            headers: {'content-type' : 'application/json'},
-            url: 'http://15.164.217.178:3000/',
-            body: req.body,
-            json: true
-        }, (error, response, body) => {
-            console.log(body);
-            res.json(body);
-        });
-        
-    });
 }
 
 function insertData() {
