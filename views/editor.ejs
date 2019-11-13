@@ -8,22 +8,26 @@
 			<h2>[ <%-hinfo.hname%> ]</h2>
 		</div>
 		<div class="col-lg-6" style="margin-bottom : 0%">
-			<a class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm"><i class="fas fa-sm text-white-50"><%-hinfo.deadline%></i></a></div>
+			<a class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm"><i class="fas fa-sm text-white-50">제출 기한 : <%-hinfo.deadline%></i></a></div>
 	</div>
     <div class="form-group">
       <div class="row" style="margin-top: 3%">
-        <h4 class="col-lg-6"><label class="control-label text-primary" for="source">Code Editor</label></h4>
-        <h4 class="col-lg-6"><label class="control-label text-warning" for="fixed">Recommended Style</label></h4>
-      </div>
-      <div class="row" id="language">
-	<label class="col-md-2 control-label" for="language">Language</label>
-        <input type="radio" name="language" value="C" checked="checked">C
-        <input type="radio" name="language" value="C++">C++
-        <input type="radio" name="language" value="Java">Java
+        <label class="col-md-2 control-label" for="language">Language</label>
+        <select name="language" id="langauge">
+          <option value="c">C</option>
+          <option value="cpp">C++</option>
+          <option value="java">Java</option>
+        </select>
       </div>
       <div class="row">
-        <div class="col-lg-6"><textarea id="source"></textarea></div>
-        <div class="col-lg-6"><textarea id="fixed"></textarea></div>
+        <div class="col-lg-6">
+            <h4><label class="control-label text-primary" for="source">Code Editor</label></h4>
+            <div class="col-lg-6"><textarea id="source"></textarea></div>
+        </div>
+        <div class="col-lg-6">
+            <h4><label class="control-label text-warning" for="fixed">Recommended Style</label></h4>
+            <div class="col-lg-6"><textarea id="fixed"></textarea></div>
+        </div>
       </div>
 
       <div class="form-group" style="margin-top: 3%">
@@ -49,6 +53,24 @@
     `public class Test{&#10;&#09;public static void main(String[] args){&#10;&#09;&#09;System.out.println("Hello World!");&#10;&#09;}&#10;}`
   ];
 
+  function setMode(mode) {
+    editor = CodeMirror.fromTextArea(document.getElementById("source"), {
+      lineNumbers: true,
+      matchBrackets: true,
+      mode: mode
+    });
+    editor.setSize(500, 300);
+    editor.on("change", function() {
+      recommend();
+    })
+    fixed = CodeMirror.fromTextArea(document.getElementById("fixed"), {
+      lineNumbers: true,
+      matchBrackets: true,
+      mode: mode
+    });
+    fixed.setSize(500, 300);
+  }
+
   let editor = CodeMirror.fromTextArea(document.getElementById("source"), {
     lineNumbers: true,
     matchBrackets: true,
@@ -69,51 +91,31 @@
 
   function changeLanguage(e) {
     var value = $(e).val();
-    var checked = $(e).prop('checked');
-    var $label = $(e).next();
-
-    if (checked) {
-      jQuery('.CodeMirror.cm-s-default')[0].remove();
-      if (value == 'C') {
+    
+      jQuery('.CodeMirror.cm-s-default').remove();
+      if (value == 'c') {
         jQuery("#source").html(defaultCode[0]);
-        editor = CodeMirror.fromTextArea(document.getElementById("source"), {
-          lineNumbers: true,
-          matchBrackets: true,
-          mode: "text/x-csrc"
-        });
-        editor.setSize(500, 300);
+        setMode("text/x-csrc");
       }
-      else if (value == 'C++') {
+      else if (value == 'cpp') {
         jQuery("#source").html(defaultCode[1]);
-        editor = CodeMirror.fromTextArea(document.getElementById("source"), {
-          lineNumbers: true,
-          matchBrackets: true,
-          mode: "text/x-c++src"
-        });
-        editor.setSize(500, 300);
-
+        setMode("text/x-c++src");
       }
-      else if (value == 'Java') {
+      else if (value == 'java') {
         jQuery("#source").html(`${defaultCode[2]}`);
-
-        editor = CodeMirror.fromTextArea(document.getElementById("source"), {
-          lineNumbers: true,
-          matchBrackets: true,
-          mode: "text/x-java"
-        });
-        editor.setSize(500, 300);
+        setMode("text/x-java");
       }
-    }
+      recommend();
   }
 
   $("document").ready(function() {
-    $('input[name="language"]').each(function () {
+    $('select[name="language"]').each(function () {
       changeLanguage(this);
     });
   })
 
-  $('input[name="language"]').change(function () {
-    $('input[name="language"]').each(function () {
+  $('select[name="language"]').change(function () {
+    $('select[name="language"]').each(function () {
       changeLanguage(this);
     });
   });
@@ -146,17 +148,21 @@
     $(document).bind(preventEvent);
   }());
 
-  $("#sendButton").click(function() {
+  function recommend() {
     const code = editor.getValue();;
     $.ajax({
       type: 'POST',
       url: '/Convert',
-      data: `code=${code}`,
+      data: {code:`${code}`, language:`${$('select[name="language"]').val()}`},
       success: function(data) {
         if(data != null) {
           fixed.setValue(data);
         }
       }
      });
+  }
+
+  $("#sendButton").click(function() {
+    recommend();
   });
 </script>
