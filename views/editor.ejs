@@ -20,13 +20,14 @@
         </select>
       </div>
       <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-5">
             <h4><label class="control-label text-primary" for="source">Code Editor</label></h4>
-            <div class="col-lg-6"><textarea id="source"></textarea></div>
+            <div><textarea id="source"></textarea></div>
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-5">
             <h4><label class="control-label text-warning" for="fixed">Recommended Style</label></h4>
-            <div class="col-lg-6"><textarea id="fixed"></textarea></div>
+            <div><textarea id="fixed"></textarea></div>
         </div>
       </div>
 
@@ -62,14 +63,16 @@
       matchBrackets: true,
       mode: mode
     });
-    editor.setSize(500, 300);
+    editor.setSize('100%', 300);
+
     fixed = CodeMirror.fromTextArea(document.getElementById("fixed"), {
       lineNumbers: true,
       matchBrackets: true,
-      readOnly: true,
+      styleSelectedText: true,
+      readOnly: 'nocursor',
       mode: mode
     });
-    fixed.setSize(500, 300);
+    fixed.setSize('100%', 300);
     editor.on("change", function() {
       recommend();
     })
@@ -138,15 +141,39 @@
     $(document).bind(preventEvent);
   }());
 
+  function markline(data, view) {
+    if (data.length == 1) {
+      view.addLineClass(data[0]-1, "background", "fixed-line");
+    } else {
+      for ( let i = data[0]; i <= data[1]; i++ ) {
+        view.addLineClass(i-1, "background", "fixed-line");
+      }
+    }
+  }
+
   function recommend() {
-    const code = editor.getValue();;
+    const code = editor.getValue().replace(/\t/g, "    ");
     $.ajax({
       type: 'POST',
       url: '/Convert',
       data: {code:`${code}`, language:`${$('select[name="language"]').val()}`},
       success: function(data) {
         if(data != null) {
-          fixed.setValue(data);
+          for ( let i = 0; i < editor.lineCount(); i++ )
+            editor.removeLineClass(i, "background", "fixed-line");
+          fixed.setValue(data.result);
+          const diff = data.diff.split("\n").filter( e => {
+            if ( !isNaN(e[0]) )
+              return true;
+            return false;
+          } );
+          diff.forEach( e => {
+            const pattern = /[abcd\>\<]/;
+            const orig = e.split(pattern)[0].split(",");
+            const fix = e.split(pattern)[1].split(",");
+            markline(orig, editor);
+            markline(fix, fixed);
+          } )
           const info = editor.getScrollInfo();
           fixed.scrollTo(info.left, info.top);
         }
