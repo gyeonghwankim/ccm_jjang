@@ -42,6 +42,16 @@ function callMainPage(req, res, sessionData) {
     }
 }
 
+function LineTrim(code) {
+    return code.split('\n').reduce( (pre, e) => {
+        if ( !e.trim().length )
+            pre += "\n";
+        else
+            pre += `${e}\n`;
+        return pre;
+    }, "" );
+}
+
 const route = (app) => {
     app.get('/', (req, res) => {
         res.redirect('/Main');
@@ -145,8 +155,8 @@ const route = (app) => {
     })
     app.post('/Convert', (req, res) => {
         const lang = req.body.language;
-        const code = req.body.code;
-        const origin = req.body.origin;
+        const code = LineTrim((req.body.code).replace(/ +/g, " ").replace(/\t/g, "    "));
+        const origin = LineTrim((req.body.code).replace(/\t/g, "    "));
     
         fs.writeFileSync(`1.${lang}`, code, 'utf8');
         fs.writeFileSync(`1.${lang}.orig`, origin, 'utf8');

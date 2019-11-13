@@ -152,12 +152,11 @@
   }
 
   function recommend() {
-    const origin = editor.getValue().replace(/\t/g, "    ");
-    const code = editor.getValue().replace(/ +/g, " ").replace(/\t/g, "    ");
+    const code = editor.getValue();
     $.ajax({
       type: 'POST',
       url: '/Convert',
-      data: {code:`${code}`, language:`${$('select[name="language"]').val()}`, origin: `${origin}`},
+      data: {code:`${code}`, language:`${$('select[name="language"]').val()}`},
       success: function(data) {
         if(data != null) {
           for ( let i = 0; i < editor.lineCount(); i++ )
