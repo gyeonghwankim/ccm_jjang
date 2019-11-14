@@ -37,14 +37,14 @@
         </div>
       </div>
       <div class="form-group" style="margin-top: 3%">
-        <button class="btn btn-primary" id="sendButton">제출</button>
+        <button class="btn btn-primary" id="sendcode">제출</button>
       </div>
   </div>
   </div>
 </div>
 
-<form action="/editor" method="POST" id="hiddenForm" style="display : none">
-  <input type="text" name="sourceValue" id="hiddenValue">
+<form action="/EvaluateCode" method="POST" id="evaluatecode" style="display : none">
+  <input type="text" name="code" id="ecode">
 </form>
 <form action="/AddScore" method="POST" id="addscore" style="display : none">
   <input type="number" name="score" id="score">
@@ -193,8 +193,10 @@
      });
   }
 
-  $("#sendButton").click(function() {
-    recommend();
+  $("#sendcode").click(function() {
+    const code = editor.getValue();
+    $("#ecode").val(code);
+    $("#evaluatecode").submit();
   });
 
   $("#scroll").change(

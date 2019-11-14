@@ -153,6 +153,29 @@ const route = (app) => {
             res.render('editors', sendData);
         })
     })
+    app.get('/IsSubmit', (req, res) => {
+        const uid = req.query.uid, hid = req.query.hid;
+        const query = `SELECT COUNT(*) as cnt FROM score WHERE hid = '${hid}' and uid = '${uid}';`;
+        connection.query(query, (err, result) => {
+            if ( result[0].cnt )
+                res.send("true");
+            else
+                res.send("false");
+        })
+    })
+    app.post('/EvaluateCode', (req, res) => {
+        const code = req.body.code;
+        // To Do anything with received code ...
+        const score = Math.floor(Math.random() * 100);
+        const query = `INSERT INTO score(uid, hid, score, date) VALUES ('${req.session.data.id}', '${hid}', ${score}, NOW())`;
+        connection.query(query, (err, result) => {
+            if ( !err ) {
+                res.render('notify', { success: true, message: "제출 되었습니다.", move: "/CoursePage" });
+            } else {
+                res.render('notify', { success: true, message: "다시 시도해 주세요", move: "javascript:history.back()" });
+            }
+        })
+    })
     app.post('/Convert', (req, res) => {
         const lang = req.body.language;
         const code = LineTrim((req.body.code).replace(/ +/g, " ").replace(/\t/g, "    "));
@@ -168,7 +191,7 @@ const route = (app) => {
     })
     app.post('/KillHW', (req, res) => {
         const hid = req.body.hid;
-        const query = `UPDATE homework SET deadline = NOW() WHERE hid = ${hid};`;
+        const query = `UPDATE homework SET deadline = DATE_FORMAT(now(), '%Y-%m-%d %H:%i') WHERE hid = ${hid};`;
         connection.query(query, function (err, result) {
             if ( !err )
                 res.render('notify', { success: true, message: "마감 되었습니다.", move: "/CoursePage" });
