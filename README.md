@@ -6,7 +6,7 @@
   - NodeJs    `8.10.0`
   - MySQL     `5.7.27`
 
-## Open Server
+## How to Start
 To install the required modules, use this command :
 ```
 npm install
