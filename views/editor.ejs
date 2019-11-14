@@ -12,12 +12,18 @@
 	</div>
     <div class="form-group">
       <div class="row" style="margin-top: 3%">
-        <label class="col-md-2 control-label" for="language">Language</label>
-        <select name="language" id="langauge">
-          <option value="c">C</option>
-          <option value="cpp">C++</option>
-          <option value="java">Java</option>
-        </select>
+        <div class="col-lg-5">
+          <label class="control-label" for="language">Language</label>
+          <select name="language" id="langauge">
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+          </select>
+          <div class="custom-control custom-checkbox medium" style="float: right">
+            <input type="checkbox" class="custom-control-input" id="scroll" checked="true">
+            <label class="custom-control-label" for="scroll">Auto-Scroll</label>
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="col-lg-5">
@@ -30,7 +36,6 @@
             <div><textarea id="fixed"></textarea></div>
         </div>
       </div>
-
       <div class="form-group" style="margin-top: 3%">
         <button class="btn btn-primary" id="sendButton">제출</button>
       </div>
@@ -49,9 +54,12 @@
 </form>
 
 <script type="text/Javascript">
-  let defaultCode = [ `#include <stdio.h>&#10;&#10;int main(){&#10;&#09;printf("Hello World!");&#10;&#09;return 0;&#10;}`,
-    `#include <iostream>&#10;&#10;using namespace std;&#10;&#10;int main(){&#10;&#09;cout << "Hello World!" << endl;&#10;&#09;return 0;&#10;}`,
-    `public class Test{&#10;&#09;public static void main(String[] args){&#10;&#09;&#09;System.out.println("Hello World!");&#10;&#09;}&#10;}`
+
+  var autoscroll = true;
+
+  let defaultCode = [ `#include <stdio.h>&#10;&#10;int main() {&#10;&#09;printf("Hello World!");&#10;&#09;return 0;&#10;}`,
+    `#include <iostream>&#10;&#10;using namespace std;&#10;&#10;int main() {&#10;&#09;cout << "Hello World!" << endl;&#10;&#09;return 0;&#10;}`,
+    `public class Test {&#10;&#09;public static void main(String[] args) {&#10;&#09;&#09;System.out.println("Hello World!");&#10;&#09;}&#10;}`
   ];
 
   function setMode(mode) {
@@ -77,8 +85,10 @@
       recommend();
     })
     editor.on("scroll", function() {
-      const info = editor.getScrollInfo();
-      fixed.scrollTo(info.left, info.top);
+      if ( autoscroll ) {
+        const info = editor.getScrollInfo();
+        fixed.scrollTo(info.left, info.top);
+      }
     })
   }
 
@@ -174,8 +184,10 @@
             markline(orig, editor);
             markline(fix, fixed);
           } )
-          const info = editor.getScrollInfo();
-          fixed.scrollTo(info.left, info.top);
+          if ( autoscroll ) {
+            const info = editor.getScrollInfo();
+            fixed.scrollTo(info.left, info.top);
+          }
         }
       }
      });
@@ -184,4 +196,14 @@
   $("#sendButton").click(function() {
     recommend();
   });
+
+  $("#scroll").change(
+    function() {
+      if ($("#scroll").is(":checked")) {
+        autoscroll = true;
+      } else {
+        autoscroll = false;
+      }
+    }
+  )
 </script>
