@@ -8,7 +8,8 @@
 			<h2>[ <%-hinfo.hname%> ]</h2>
 		</div>
 		<div class="col-lg-6" style="margin-bottom : 0%">
-			<a class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm"><i class="fas fa-sm text-white-50">제출 기한 : <%-hinfo.deadline%></i></a></div>
+      <a class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm"><i class="fas fa-sm text-white-50">제출 기한 : <%-hinfo.deadline%></i></a>
+    </div>
 	</div>
     <div class="form-group">
       <div class="row" style="margin-top: 3%">
@@ -25,7 +26,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" style="margin-top: 2%">
         <div class="col-lg-5">
             <h4><label class="control-label text-primary" for="source">Code Editor</label></h4>
             <div><textarea id="source"></textarea></div>
@@ -45,6 +46,7 @@
 
 <form action="/EvaluateCode" method="POST" id="evaluatecode" style="display : none">
   <input type="text" name="code" id="ecode">
+  <input type="text" name="language" id="lang">
 </form>
 <form action="/AddScore" method="POST" id="addscore" style="display : none">
   <input type="number" name="score" id="score">
@@ -195,7 +197,9 @@
 
   $("#sendcode").click(function() {
     const code = editor.getValue();
+    const lang = $('select[name="language"]').val();
     $("#ecode").val(code);
+    $("#lang").val(lang);
     $("#evaluatecode").submit();
   });
 

@@ -139,7 +139,7 @@
         url: '/IsSubmit',
         data: {uid: `${uid}`, hid: `${hid}`},
         success: function(data) {
-          if ( data ) {
+          if ( data == "true" ) {
             $(`#s${index}`).append(`<a href="javascript:()" class="btn btn-secondary btn-icon-split" style="margin-bottom: 1.5%; margin-left: 10%"><span class="text">제출됨</span></a>`);
           } else {
             $(`#s${index}`).append(`<a href="javascript:()" class="btn btn-danger btn-icon-split" style="margin-bottom: 1.5%; margin-left: 10%"><span class="text">미제출</span></a>`);

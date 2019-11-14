@@ -49,7 +49,7 @@ function LineTrim(code) {
         else
             pre += `${e}\n`;
         return pre;
-    }, "" );
+    }, "" ).slice(0, -1);
 }
 
 const route = (app) => {
@@ -164,17 +164,41 @@ const route = (app) => {
         })
     })
     app.post('/EvaluateCode', (req, res) => {
-        const code = req.body.code;
-        // To Do anything with received code ...
-        const score = Math.floor(Math.random() * 100);
-        const query = `INSERT INTO score(uid, hid, score, date) VALUES ('${req.session.data.id}', '${hid}', ${score}, NOW())`;
-        connection.query(query, (err, result) => {
-            if ( !err ) {
-                res.render('notify', { success: true, message: "제출 되었습니다.", move: "/CoursePage" });
-            } else {
-                res.render('notify', { success: true, message: "다시 시도해 주세요", move: "javascript:history.back()" });
-            }
-        })
+        const lang = req.body.language;
+        const code = LineTrim((req.body.code).replace(/ +/g, " ").replace(/\t/g, "    "));
+        const origin = LineTrim((req.body.code).replace(/\t/g, "    "));
+    
+        fs.writeFileSync(`1.${lang}`, code, 'utf8');
+        fs.writeFileSync(`1.${lang}.orig`, origin, 'utf8');
+        exec.execSync(`astyle 1.${lang} -p`);
+        const result = fs.readFileSync(`1.${lang}`, 'utf8');
+        exec.exec(`diff 1.${lang}.orig 1.${lang}`, function(err, stdout) {
+            const result = stdout.split("\n");
+            const diff = result.filter( e => {
+                if ( !isNaN(e[0]) )
+                  return true;
+                return false;
+            });
+            const count = diff.reduce( (pre, e) => {
+                const pattern = /[abcd\>\<]/;
+                const fix = e.split(pattern)[1].split(",");
+                if ( fix.length == 1 )
+                    pre += 1;
+                else {
+                    pre += (fix[1]-fix[0]+1);
+                }
+                return pre;
+            }, 0 );
+            const score = Math.floor((count / result.length) * 100);
+            const query = `INSERT INTO score(uid, hid, score, date) VALUES ('${req.session.data.id}', '${hid}', ${score}, NOW())`;
+            connection.query(query, (err, result) => {
+                if ( !err ) {
+                    res.render('notify', { success: true, message: "제출 되었습니다.", move: "/CoursePage" });
+                } else {
+                    res.render('notify', { success: true, message: "다시 시도해 주세요", move: "javascript:history.back()" });
+                }
+            })
+        });
     })
     app.post('/Convert', (req, res) => {
         const lang = req.body.language;
