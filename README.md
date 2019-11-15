@@ -1,5 +1,5 @@
 #  Code Indent Checker
-* 인덴트 검사 기능을 가진 코딩역량 관리 플랫폼
+* Coding Competencies Manager with Indent Checking
 * [오픈소스SW개발 경진대회](https://user-images.githubusercontent.com/26873983/68831018-aba73080-06f0-11ea-82c7-1a93f8d2de46.jpg)
 
 ## Environment
