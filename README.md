@@ -38,7 +38,8 @@ module.exports = {
     * `diff` : Linux/Ubuntu OS
     * `astyle` : install [Artistic Style](http://astyle.sourceforge.net)
 
-## Issue
+## License
+* MIT
 
 ## Library
 * [CodeMirror](http://codemirror.net) [(Git)](https://github.com/codemirror/CodeMirror)
