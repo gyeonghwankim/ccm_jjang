@@ -39,10 +39,11 @@ module.exports = {
     * `astyle` : install [Artistic Style](http://astyle.sourceforge.net)
 
 ## License
-* MIT
+* MIT License
 
 ## Library
 * [CodeMirror](http://codemirror.net) [(Git)](https://github.com/codemirror/CodeMirror)
 * [Artistic Style](http://astyle.sourceforge.net)
 
 ## Contact Us
+E-mail : jsh5869a@naver.com
