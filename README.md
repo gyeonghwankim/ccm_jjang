@@ -40,7 +40,7 @@ module.exports = {
     * `astyle` : install [Artistic Style](http://astyle.sourceforge.net)
 
 ## License
-* MIT License
+* Apache License 2.0
 
 ## Library
 * [CodeMirror](http://codemirror.net) [(Git)](https://github.com/codemirror/CodeMirror)
