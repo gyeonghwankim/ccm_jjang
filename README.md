@@ -47,4 +47,4 @@ module.exports = {
 * [Artistic Style](http://astyle.sourceforge.net)
 
 ## Contact Us
-E-mail : jsh5869a@naver.com
+E-mail : gh941129@gmail.com
